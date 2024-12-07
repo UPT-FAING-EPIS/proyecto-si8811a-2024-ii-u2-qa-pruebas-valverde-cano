@@ -13,26 +13,26 @@ jobs:
     # Configurar el repositorio
     - name: Checkout repository
       uses: actions/checkout@v3
+      run: echo "::notice title=Repository Checkout ✅::Successfully checked out the repository."
 
     # Configurar Python
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: "3.9"
+      run: echo "::notice title=Python Setup 🐍::Python 3.9 has been configured successfully."
 
     # Instalar herramientas necesarias para la publicación
     - name: Install packaging tools
       run: |
         python -m pip install --upgrade pip setuptools wheel twine
+        echo "::notice title=Dependencies Installed 📦::Packaging tools installed successfully (pip, setuptools, wheel, twine)."
 
     # Construir el paquete
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
-
-    # Generar una anotación sobre el paquete construido
-    - name: Annotate build success
-      run: echo "::notice title=Build Success::The package has been successfully built. Files ready for upload."
+        echo "::notice title=Package Build 🚀::Package built successfully and is ready for upload."
 
     # Subir el paquete a PyPI
     - name: Publish to PyPI
@@ -41,9 +41,9 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
       run: |
         twine upload dist/*
-        echo "::notice title=Upload Success::The package has been successfully uploaded to PyPI."
+        echo "::notice title=Upload Success ✅::The package has been successfully uploaded to PyPI."
 
     # Generar una anotación con los detalles del lanzamiento
     - name: Create release annotation
       run: |
-        echo "::notice title=Release Details::Package version ${GITHUB_REF_NAME} has been published to PyPI."
+        echo "::notice title=Release Details 📢::Package version ${GITHUB_REF_NAME} has been successfully published to PyPI."
