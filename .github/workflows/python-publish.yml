@@ -14,6 +14,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
       run: echo "::notice title=Repository Checkout ✅::Successfully checked out the repository."
+      continue-on-error: false
 
     # Configurar Python
     - name: Setup Python
@@ -21,18 +22,21 @@ jobs:
       with:
         python-version: "3.9"
       run: echo "::notice title=Python Setup 🐍::Python 3.9 has been configured successfully."
+      continue-on-error: false
 
     # Instalar herramientas necesarias para la publicación
     - name: Install packaging tools
       run: |
         python -m pip install --upgrade pip setuptools wheel twine
         echo "::notice title=Dependencies Installed 📦::Packaging tools installed successfully (pip, setuptools, wheel, twine)."
+      continue-on-error: true
 
     # Construir el paquete
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
         echo "::notice title=Package Build 🚀::Package built successfully and is ready for upload."
+      continue-on-error: true
 
     # Subir el paquete a PyPI
     - name: Publish to PyPI
@@ -42,8 +46,43 @@ jobs:
       run: |
         twine upload dist/*
         echo "::notice title=Upload Success ✅::The package has been successfully uploaded to PyPI."
+      continue-on-error: true
 
-    # Generar una anotación con los detalles del lanzamiento
-    - name: Create release annotation
+    # Generar una tabla con los resultados
+    - name: Generate summary table
+      if: always()  # Ejecuta esta etapa siempre, incluso si el pipeline falla
       run: |
-        echo "::notice title=Release Details 📢::Package version ${GITHUB_REF_NAME} has been successfully published to PyPI."
+        echo "## 📝 Pipeline Summary Table" >> $GITHUB_STEP_SUMMARY
+        echo "| Step                          | Status          | Rating         |" >> $GITHUB_STEP_SUMMARY
+        echo "|-------------------------------|-----------------|----------------|" >> $GITHUB_STEP_SUMMARY
+
+        # Anotaciones para cada paso
+        if [[ ${{ steps.checkout.outcome }} == "success" ]]; then
+          echo "| Repository Checkout           | ✅ Done         | ⭐⭐⭐⭐⭐          |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Repository Checkout           | ❌ Failed       | ⭐              |" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        if [[ ${{ steps.python_setup.outcome }} == "success" ]]; then
+          echo "| Python Setup                  | ✅ Done         | ⭐⭐⭐⭐⭐          |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Python Setup                  | ❌ Failed       | ⭐              |" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        if [[ ${{ steps.install_tools.outcome }} == "success" ]]; then
+          echo "| Dependencies Installed        | ✅ Done         | ⭐⭐⭐⭐⭐          |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Dependencies Installed        | ❌ Failed       | ⭐              |" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        if [[ ${{ steps.build_package.outcome }} == "success" ]]; then
+          echo "| Package Build                 | ✅ Done         | ⭐⭐⭐⭐⭐          |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Package Build                 | ❌ Failed       | ⭐              |" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        if [[ ${{ steps.publish_pypi.outcome }} == "success" ]]; then
+          echo "| Upload to PyPI                | ✅ Done         | ⭐⭐⭐⭐⭐          |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Upload to PyPI                | ❌ Failed       | ⭐              |" >> $GITHUB_STEP_SUMMARY
+        fi
