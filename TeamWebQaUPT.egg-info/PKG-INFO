@@ -1,10 +1,27 @@
+Metadata-Version: 2.1
+Name: TeamWebQaUPT
+Version: 1.1.16
+Summary: Paquete para pruebas automatizadas de interfaces web
+Home-page: https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u2-qa-pruebas-valverde-cano
+Author: Jean Valverde y Anthony Cano
+Author-email: jeanvalverdezamora@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: selenium>=4.8.0
+Requires-Dist: pytest>=7.0.0
+Requires-Dist: pytest-xdist>=3.0.0
+Requires-Dist: allure-pytest>=2.13.0
+
 
 # TeamWebQaUPT
 
 **TeamWebQaUPT** es un paquete disenado para realizar pruebas automatizadas de interfaces web utilizando Selenium y pytest.  
 Proporciona herramientas reutilizables y faciles de usar para simplificar el proceso de pruebas.
 
-# Novedades en la Versión 1.1.17 de TeamWebQaUPT
+# Novedades en la Versión 1.1.16 de TeamWebQaUPT
 
 **TeamWebQaUPT** ha sido actualizado para incluir mejoras significativas y nuevas funcionalidades que amplían las capacidades del paquete y simplifican las pruebas automatizadas en diversas plataformas.
 
