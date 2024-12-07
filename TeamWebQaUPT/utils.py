@@ -112,3 +112,51 @@ def process_table_data(table_data: List[List[str]]) -> List[Dict[str, str]]:
     logger.info("Procesando datos de la tabla.")
     headers = table_data[0]
     return [dict(zip(headers, row)) for row in table_data[1:]]
+
+def search_and_validate_results(
+    driver,
+    search_input_selector: str,
+    search_button_selector: str,
+    search_term: str,
+    results_selector: str,
+    expected_results: List[str]
+) -> None:
+    """
+    Realiza una búsqueda en un campo de entrada y valida los resultados.
+
+    :param driver: Selenium WebDriver.
+    :param search_input_selector: Selector CSS del campo de entrada de búsqueda.
+    :param search_button_selector: Selector CSS del botón de búsqueda.
+    :param search_term: Término a buscar.
+    :param results_selector: Selector CSS de los resultados de búsqueda.
+    :param expected_results: Lista de textos esperados en los resultados.
+    """
+    try:
+        logger.info(f"Realizando búsqueda con el término: '{search_term}'")
+        
+        # Introducir el término de búsqueda
+        search_input = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, search_input_selector))
+        )
+        search_input.clear()
+        search_input.send_keys(search_term)
+
+        # Hacer clic en el botón de búsqueda
+        search_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, search_button_selector))
+        )
+        search_button.click()
+
+        # Validar los resultados de búsqueda
+        results = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, results_selector))
+        )
+        result_texts = [result.text for result in results]
+
+        for expected in expected_results:
+            assert any(expected in result for result in result_texts), \
+                f"El resultado esperado '{expected}' no se encontró en los resultados de búsqueda."
+        logger.info(f"Búsqueda y validación completadas con éxito para el término: '{search_term}'")
+    except TimeoutException as e:
+        logger.error("Hubo un problema al realizar la búsqueda o validar los resultados.")
+        raise AssertionError("No se completó la búsqueda o no se encontraron resultados válidos.") from e
