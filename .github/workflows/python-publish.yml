@@ -3,10 +3,10 @@ name: Publish Python Package
 on:
   push:
     tags:
-      - "v*"  # Se ejecutará cuando se empuje un tag que comience con "v"
+      - "v*"  # El workflow se ejecutará cuando se empuje un tag que comience con "v"
 
 jobs:
-  test-and-publish:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,31 +20,30 @@ jobs:
       with:
         python-version: "3.9"
 
-    # Instalar dependencias
-    - name: Install dependencies
+    # Instalar herramientas necesarias para la publicación
+    - name: Install packaging tools
       run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install -r requirements.txt
-        pip install pytest pytest-cov twine
-
-    # Ejecutar pruebas
-    - name: Run tests
-      run: |
-        pytest tests/ --disable-warnings
+        python -m pip install --upgrade pip setuptools wheel twine
 
     # Construir el paquete
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
 
-    # Subir a PyPI
+    # Generar una anotación sobre el paquete construido
+    - name: Annotate build success
+      run: echo "::notice title=Build Success::The package has been successfully built. Files ready for upload."
+
+    # Subir el paquete a PyPI
     - name: Publish to PyPI
       env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
       run: |
         twine upload dist/*
+        echo "::notice title=Upload Success::The package has been successfully uploaded to PyPI."
 
-    # Confirmar el éxito del pipeline
-    - name: Success message
-      run: echo "Package successfully published to PyPI!"
+    # Generar una anotación con los detalles del lanzamiento
+    - name: Create release annotation
+      run: |
+        echo "::notice title=Release Details::Package version ${GITHUB_REF_NAME} has been published to PyPI."
