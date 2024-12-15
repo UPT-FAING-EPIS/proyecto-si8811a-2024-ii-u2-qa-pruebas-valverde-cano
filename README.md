@@ -10,6 +10,9 @@
 | Anthony Alexander | Cano Sucso | 2020067573 |
 
 ____
+## COntinuación del proyecto 
+![Proyecto-Qa-Web](https://github.com/JeanValverde24/SI-8811-Pruebas_QA_U2_VALVERDE_CANO)
+___
 
 ## Diagrama de Clases
 ![image](https://github.com/user-attachments/assets/46949599-0da3-4488-b6aa-4f3c9b3799c1)
